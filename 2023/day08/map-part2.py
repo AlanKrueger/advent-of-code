@@ -7,21 +7,6 @@ class Node:
         self.left = left
         self.right = right
 
-    def __str__(self):
-        return f'{self.name}: ({self.left}, {self.right})'
-    
-    def __repr__(self):
-        return self.__str__()
-    
-    @staticmethod
-    def parseFrom(line):
-        match = linePattern.match(line.strip())
-        name = match.group(1)
-        left = match.group(2)
-        right = match.group(3)
-        return Node(name, left, right)
-
-
 linePattern = re.compile("(\w+) = \((\w+), (\w+)\)")
 
 nodes = {}
@@ -29,33 +14,26 @@ nodes = {}
 directions = sys.stdin.readline().strip()
 sys.stdin.readline()
 
-rawNodes = [Node.parseFrom(line) for line in sys.stdin]
-nodes = {node.name: node for node in rawNodes}
+for line in sys.stdin:
+    match = linePattern.match(line.strip())
+    name = match.group(1)
+    left = match.group(2)
+    right = match.group(3)
+    node = Node(name, left, right)
+    nodes[node.name] = node
 
-def atEnd():
-    for node in curNodes:
-        if node.name[-1] != 'Z':
-            return False
-    return True
+startNodes = [nodes[name] for name in nodes.keys() if name[-1] == 'A']
 
-def navigate(node, dir):
-    match dir:
-        case 'L':
-            return nodes[node.left]
-        case 'R':
-            return nodes[node.right]
-
-curNodes = [node for node in nodes.values() if node.name[-1] == 'A']
-count = 0
-
-#print(f'starting at {curNodes}')
-while not atEnd():
-    for dir in directions:
-        old = curNodes
-        if atEnd():
-            break
-        curNodes = [navigate(node, dir) for node in curNodes]
-        count = count + 1
-        #print(f'{dir}: {old} -> {curNodes} ({count})')
-
-print(count)
+for node in startNodes:
+    count = 0
+    while node.name[-1] != 'Z':
+        for dir in directions:
+            if node.name[-1] == 'Z':
+                break
+            match dir:
+                case 'L':
+                    node = nodes[node.left]
+                case 'R':
+                    node = nodes[node.right]
+            count = count + 1
+    print(f'{node.name}: {count}')

@@ -1,11 +1,10 @@
-# pylint: disable=missing-module-docstring, missing-class-docstring, missing-function-docstring, invalid-name, redefined-outer-name, non-ascii-name, too-few-public-methods
+# pylint: disable=missing-module-docstring, missing-class-docstring, missing-function-docstring, invalid-name, redefined-outer-name, non-ascii-name, too-few-public-methods, method-cache-max-size-none
 
 from __future__ import annotations
 import argparse
 import sys
 from typing import List
 from typing import TextIO
-from alive_progress import alive_bar
 from functools import cache as memoized
 from strenum import StrEnum
 

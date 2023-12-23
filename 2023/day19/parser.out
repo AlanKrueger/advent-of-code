@@ -1,0 +1,457 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> file
+Rule 1     file -> workflow_definition_list part_list
+Rule 2     workflow_definition_list -> workflow_definition_list workflow_definition
+Rule 3     workflow_definition_list -> workflow_definition
+Rule 4     workflow_definition -> workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE
+Rule 5     workflow_name -> WORD
+Rule 6     rule_list -> rule_list COMMA rule
+Rule 7     rule_list -> rule
+Rule 8     rule -> comparison COLON workflow_name
+Rule 9     rule -> workflow_name
+Rule 10    comparison -> property compare_operator NUMBER
+Rule 11    property -> XCOOL
+Rule 12    property -> MUSICAL
+Rule 13    property -> AERODYNAMIC
+Rule 14    property -> SHINY
+Rule 15    compare_operator -> GT
+Rule 16    compare_operator -> LT
+Rule 17    part_list -> part_list part
+Rule 18    part_list -> part
+Rule 19    part -> OPEN_BRACE rating_list CLOSE_BRACE NEWLINE
+Rule 20    rating_list -> rating_list COMMA rating
+Rule 21    rating_list -> rating
+Rule 22    rating -> property EQ NUMBER
+
+Terminals, with rules where they appear
+
+AERODYNAMIC          : 13
+CLOSE_BRACE          : 4 19
+COLON                : 8
+COMMA                : 6 20
+EQ                   : 22
+GT                   : 15
+LT                   : 16
+MUSICAL              : 12
+NEWLINE              : 4 19
+NUMBER               : 10 22
+OPEN_BRACE           : 4 19
+SHINY                : 14
+WORD                 : 5
+XCOOL                : 11
+error                : 
+
+Nonterminals, with rules where they appear
+
+compare_operator     : 10
+comparison           : 8
+file                 : 0
+part                 : 17 18
+part_list            : 1 17
+property             : 10 22
+rating               : 20 21
+rating_list          : 19 20
+rule                 : 6 7
+rule_list            : 4 6
+workflow_definition  : 2 3
+workflow_definition_list : 1 2
+workflow_name        : 4 8 9
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . file
+    (1) file -> . workflow_definition_list part_list
+    (2) workflow_definition_list -> . workflow_definition_list workflow_definition
+    (3) workflow_definition_list -> . workflow_definition
+    (4) workflow_definition -> . workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE
+    (5) workflow_name -> . WORD
+
+    WORD            shift and go to state 5
+
+    file                           shift and go to state 1
+    workflow_definition_list       shift and go to state 2
+    workflow_definition            shift and go to state 3
+    workflow_name                  shift and go to state 4
+
+state 1
+
+    (0) S' -> file .
+
+
+
+state 2
+
+    (1) file -> workflow_definition_list . part_list
+    (2) workflow_definition_list -> workflow_definition_list . workflow_definition
+    (17) part_list -> . part_list part
+    (18) part_list -> . part
+    (4) workflow_definition -> . workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE
+    (19) part -> . OPEN_BRACE rating_list CLOSE_BRACE NEWLINE
+    (5) workflow_name -> . WORD
+
+    OPEN_BRACE      shift and go to state 9
+    WORD            shift and go to state 5
+
+    part_list                      shift and go to state 6
+    workflow_definition            shift and go to state 7
+    part                           shift and go to state 8
+    workflow_name                  shift and go to state 4
+
+state 3
+
+    (3) workflow_definition_list -> workflow_definition .
+
+    OPEN_BRACE      reduce using rule 3 (workflow_definition_list -> workflow_definition .)
+    WORD            reduce using rule 3 (workflow_definition_list -> workflow_definition .)
+
+
+state 4
+
+    (4) workflow_definition -> workflow_name . OPEN_BRACE rule_list CLOSE_BRACE NEWLINE
+
+    OPEN_BRACE      shift and go to state 10
+
+
+state 5
+
+    (5) workflow_name -> WORD .
+
+    OPEN_BRACE      reduce using rule 5 (workflow_name -> WORD .)
+    CLOSE_BRACE     reduce using rule 5 (workflow_name -> WORD .)
+    COMMA           reduce using rule 5 (workflow_name -> WORD .)
+
+
+state 6
+
+    (1) file -> workflow_definition_list part_list .
+    (17) part_list -> part_list . part
+    (19) part -> . OPEN_BRACE rating_list CLOSE_BRACE NEWLINE
+
+    $end            reduce using rule 1 (file -> workflow_definition_list part_list .)
+    OPEN_BRACE      shift and go to state 9
+
+    part                           shift and go to state 11
+
+state 7
+
+    (2) workflow_definition_list -> workflow_definition_list workflow_definition .
+
+    OPEN_BRACE      reduce using rule 2 (workflow_definition_list -> workflow_definition_list workflow_definition .)
+    WORD            reduce using rule 2 (workflow_definition_list -> workflow_definition_list workflow_definition .)
+
+
+state 8
+
+    (18) part_list -> part .
+
+    OPEN_BRACE      reduce using rule 18 (part_list -> part .)
+    $end            reduce using rule 18 (part_list -> part .)
+
+
+state 9
+
+    (19) part -> OPEN_BRACE . rating_list CLOSE_BRACE NEWLINE
+    (20) rating_list -> . rating_list COMMA rating
+    (21) rating_list -> . rating
+    (22) rating -> . property EQ NUMBER
+    (11) property -> . XCOOL
+    (12) property -> . MUSICAL
+    (13) property -> . AERODYNAMIC
+    (14) property -> . SHINY
+
+    XCOOL           shift and go to state 15
+    MUSICAL         shift and go to state 16
+    AERODYNAMIC     shift and go to state 17
+    SHINY           shift and go to state 18
+
+    rating_list                    shift and go to state 12
+    rating                         shift and go to state 13
+    property                       shift and go to state 14
+
+state 10
+
+    (4) workflow_definition -> workflow_name OPEN_BRACE . rule_list CLOSE_BRACE NEWLINE
+    (6) rule_list -> . rule_list COMMA rule
+    (7) rule_list -> . rule
+    (8) rule -> . comparison COLON workflow_name
+    (9) rule -> . workflow_name
+    (10) comparison -> . property compare_operator NUMBER
+    (5) workflow_name -> . WORD
+    (11) property -> . XCOOL
+    (12) property -> . MUSICAL
+    (13) property -> . AERODYNAMIC
+    (14) property -> . SHINY
+
+    WORD            shift and go to state 5
+    XCOOL           shift and go to state 15
+    MUSICAL         shift and go to state 16
+    AERODYNAMIC     shift and go to state 17
+    SHINY           shift and go to state 18
+
+    workflow_name                  shift and go to state 19
+    rule_list                      shift and go to state 20
+    rule                           shift and go to state 21
+    comparison                     shift and go to state 22
+    property                       shift and go to state 23
+
+state 11
+
+    (17) part_list -> part_list part .
+
+    OPEN_BRACE      reduce using rule 17 (part_list -> part_list part .)
+    $end            reduce using rule 17 (part_list -> part_list part .)
+
+
+state 12
+
+    (19) part -> OPEN_BRACE rating_list . CLOSE_BRACE NEWLINE
+    (20) rating_list -> rating_list . COMMA rating
+
+    CLOSE_BRACE     shift and go to state 24
+    COMMA           shift and go to state 25
+
+
+state 13
+
+    (21) rating_list -> rating .
+
+    CLOSE_BRACE     reduce using rule 21 (rating_list -> rating .)
+    COMMA           reduce using rule 21 (rating_list -> rating .)
+
+
+state 14
+
+    (22) rating -> property . EQ NUMBER
+
+    EQ              shift and go to state 26
+
+
+state 15
+
+    (11) property -> XCOOL .
+
+    EQ              reduce using rule 11 (property -> XCOOL .)
+    GT              reduce using rule 11 (property -> XCOOL .)
+    LT              reduce using rule 11 (property -> XCOOL .)
+
+
+state 16
+
+    (12) property -> MUSICAL .
+
+    EQ              reduce using rule 12 (property -> MUSICAL .)
+    GT              reduce using rule 12 (property -> MUSICAL .)
+    LT              reduce using rule 12 (property -> MUSICAL .)
+
+
+state 17
+
+    (13) property -> AERODYNAMIC .
+
+    EQ              reduce using rule 13 (property -> AERODYNAMIC .)
+    GT              reduce using rule 13 (property -> AERODYNAMIC .)
+    LT              reduce using rule 13 (property -> AERODYNAMIC .)
+
+
+state 18
+
+    (14) property -> SHINY .
+
+    EQ              reduce using rule 14 (property -> SHINY .)
+    GT              reduce using rule 14 (property -> SHINY .)
+    LT              reduce using rule 14 (property -> SHINY .)
+
+
+state 19
+
+    (9) rule -> workflow_name .
+
+    CLOSE_BRACE     reduce using rule 9 (rule -> workflow_name .)
+    COMMA           reduce using rule 9 (rule -> workflow_name .)
+
+
+state 20
+
+    (4) workflow_definition -> workflow_name OPEN_BRACE rule_list . CLOSE_BRACE NEWLINE
+    (6) rule_list -> rule_list . COMMA rule
+
+    CLOSE_BRACE     shift and go to state 27
+    COMMA           shift and go to state 28
+
+
+state 21
+
+    (7) rule_list -> rule .
+
+    CLOSE_BRACE     reduce using rule 7 (rule_list -> rule .)
+    COMMA           reduce using rule 7 (rule_list -> rule .)
+
+
+state 22
+
+    (8) rule -> comparison . COLON workflow_name
+
+    COLON           shift and go to state 29
+
+
+state 23
+
+    (10) comparison -> property . compare_operator NUMBER
+    (15) compare_operator -> . GT
+    (16) compare_operator -> . LT
+
+    GT              shift and go to state 31
+    LT              shift and go to state 32
+
+    compare_operator               shift and go to state 30
+
+state 24
+
+    (19) part -> OPEN_BRACE rating_list CLOSE_BRACE . NEWLINE
+
+    NEWLINE         shift and go to state 33
+
+
+state 25
+
+    (20) rating_list -> rating_list COMMA . rating
+    (22) rating -> . property EQ NUMBER
+    (11) property -> . XCOOL
+    (12) property -> . MUSICAL
+    (13) property -> . AERODYNAMIC
+    (14) property -> . SHINY
+
+    XCOOL           shift and go to state 15
+    MUSICAL         shift and go to state 16
+    AERODYNAMIC     shift and go to state 17
+    SHINY           shift and go to state 18
+
+    rating                         shift and go to state 34
+    property                       shift and go to state 14
+
+state 26
+
+    (22) rating -> property EQ . NUMBER
+
+    NUMBER          shift and go to state 35
+
+
+state 27
+
+    (4) workflow_definition -> workflow_name OPEN_BRACE rule_list CLOSE_BRACE . NEWLINE
+
+    NEWLINE         shift and go to state 36
+
+
+state 28
+
+    (6) rule_list -> rule_list COMMA . rule
+    (8) rule -> . comparison COLON workflow_name
+    (9) rule -> . workflow_name
+    (10) comparison -> . property compare_operator NUMBER
+    (5) workflow_name -> . WORD
+    (11) property -> . XCOOL
+    (12) property -> . MUSICAL
+    (13) property -> . AERODYNAMIC
+    (14) property -> . SHINY
+
+    WORD            shift and go to state 5
+    XCOOL           shift and go to state 15
+    MUSICAL         shift and go to state 16
+    AERODYNAMIC     shift and go to state 17
+    SHINY           shift and go to state 18
+
+    rule                           shift and go to state 37
+    comparison                     shift and go to state 22
+    workflow_name                  shift and go to state 19
+    property                       shift and go to state 23
+
+state 29
+
+    (8) rule -> comparison COLON . workflow_name
+    (5) workflow_name -> . WORD
+
+    WORD            shift and go to state 5
+
+    workflow_name                  shift and go to state 38
+
+state 30
+
+    (10) comparison -> property compare_operator . NUMBER
+
+    NUMBER          shift and go to state 39
+
+
+state 31
+
+    (15) compare_operator -> GT .
+
+    NUMBER          reduce using rule 15 (compare_operator -> GT .)
+
+
+state 32
+
+    (16) compare_operator -> LT .
+
+    NUMBER          reduce using rule 16 (compare_operator -> LT .)
+
+
+state 33
+
+    (19) part -> OPEN_BRACE rating_list CLOSE_BRACE NEWLINE .
+
+    OPEN_BRACE      reduce using rule 19 (part -> OPEN_BRACE rating_list CLOSE_BRACE NEWLINE .)
+    $end            reduce using rule 19 (part -> OPEN_BRACE rating_list CLOSE_BRACE NEWLINE .)
+
+
+state 34
+
+    (20) rating_list -> rating_list COMMA rating .
+
+    CLOSE_BRACE     reduce using rule 20 (rating_list -> rating_list COMMA rating .)
+    COMMA           reduce using rule 20 (rating_list -> rating_list COMMA rating .)
+
+
+state 35
+
+    (22) rating -> property EQ NUMBER .
+
+    CLOSE_BRACE     reduce using rule 22 (rating -> property EQ NUMBER .)
+    COMMA           reduce using rule 22 (rating -> property EQ NUMBER .)
+
+
+state 36
+
+    (4) workflow_definition -> workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE .
+
+    OPEN_BRACE      reduce using rule 4 (workflow_definition -> workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE .)
+    WORD            reduce using rule 4 (workflow_definition -> workflow_name OPEN_BRACE rule_list CLOSE_BRACE NEWLINE .)
+
+
+state 37
+
+    (6) rule_list -> rule_list COMMA rule .
+
+    CLOSE_BRACE     reduce using rule 6 (rule_list -> rule_list COMMA rule .)
+    COMMA           reduce using rule 6 (rule_list -> rule_list COMMA rule .)
+
+
+state 38
+
+    (8) rule -> comparison COLON workflow_name .
+
+    CLOSE_BRACE     reduce using rule 8 (rule -> comparison COLON workflow_name .)
+    COMMA           reduce using rule 8 (rule -> comparison COLON workflow_name .)
+
+
+state 39
+
+    (10) comparison -> property compare_operator NUMBER .
+
+    COLON           reduce using rule 10 (comparison -> property compare_operator NUMBER .)
+

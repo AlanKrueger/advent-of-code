@@ -1,0 +1,33 @@
+{
+  "year": 2025,
+  "day": 3,
+  "unlock": "2025-12-03T05:00:00+00:00",
+  "started": "2026-11-25T23:31:44+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-25T23:32:15+00:00",
+          "answer": "17087",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to decorating the North Pole. [Continue to Part Two]"
+        }
+      ],
+      "solved": "2026-11-25T23:32:15+00:00",
+      "answer": "17087"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-25T23:33:00+00:00",
+          "answer": "169019504359949",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to decorating the North Pole.You have completed Day 3! You can [Shareon Bluesky Twitter Mastodon] this victory or [Return to Your Advent Calendar]."
+        }
+      ],
+      "solved": "2026-11-25T23:33:00+00:00",
+      "answer": "169019504359949"
+    }
+  },
+  "mode": "practice"
+}

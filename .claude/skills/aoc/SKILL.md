@@ -29,8 +29,10 @@ skip step 8, and write only inside your own day folder.
    `python3 solve.py [FILE] [PARAMS...]` (default `input`) prints part 1, and part 2
    once written, one per line as `part1: X` / `part2: Y`. Use the optional extra
    arguments for example-vs-real parameters, with the real value as the default.
-   - Stdlib first. Installed and fine to use: numpy. Don't install packages mid-run;
-     if a library you need is missing, write the stdlib approach.
+   - Stdlib first. Installed and fine to use when they're a clear win: numpy, scipy
+     (e.g. `scipy.optimize.milp` for integer programs), networkx (graphs), sympy
+     (algebra), z3 (constraint solving). Don't install packages mid-run; if something
+     else is missing, write the stdlib approach.
    - Write straightforward code first; optimize only if it is too slow (> ~30 s).
    - Always run with `timeout 60 python3 solve.py ...` so a slow attempt can't hang
      the run. Never `pkill`/`kill` by pattern; other runs may share the machine.

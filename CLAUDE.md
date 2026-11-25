@@ -11,4 +11,4 @@ Rules:
 - Additive commits only: no force-push, no history rewrites, no deleting existing files.
 - Standing approval for AoC runs: submit answers via `tools/aoc.py` (max 3 wrong per part)
   and push solved days straight to `main`.
-- Python 3, stdlib preferred.
+- Python 3, stdlib preferred; numpy, scipy, networkx, sympy and z3 are installed (via apt).

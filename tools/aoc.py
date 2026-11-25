@@ -97,15 +97,18 @@ def session() -> str:
 
 
 def throttle() -> None:
+    """Space requests MIN_INTERVAL apart across all processes on this machine."""
     THROTTLE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        last = float(THROTTLE_FILE.read_text())
-    except (FileNotFoundError, ValueError):
-        last = 0.0
-    wait = MIN_INTERVAL - (time.time() - last)
-    if wait > 0:
-        time.sleep(wait)
-    THROTTLE_FILE.write_text(str(time.time()))
+    with open(THROTTLE_FILE.with_suffix(".lock"), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            last = float(THROTTLE_FILE.read_text())
+        except (FileNotFoundError, ValueError):
+            last = 0.0
+        wait = MIN_INTERVAL - (time.time() - last)
+        if wait > 0:
+            time.sleep(wait)
+        THROTTLE_FILE.write_text(str(time.time()))
 
 
 def request(path: str, data: dict | None = None) -> str:
@@ -215,12 +218,6 @@ def cmd_fetch(year: int, day: int, quiet: bool = False) -> ArticleParser:
     d = day_dir(year, day)
     d.mkdir(parents=True, exist_ok=True)
     log = load_log(year, day)
-    if log["started"] is None:
-        # Live runs time from unlock; practice runs time from first fetch.
-        log["started"] = iso(max(now(), unlock_time(year, day)))
-        log["mode"] = "live" if now() - unlock_time(year, day) < timedelta(hours=1) else "practice"
-        save_log(year, day, log)
-
     page = request(f"/{year}/day/{day}")
     p = parse_puzzle(page)
     (d / "puzzle.md").write_text(p.markdown())
@@ -231,6 +228,12 @@ def cmd_fetch(year: int, day: int, quiet: bool = False) -> ArticleParser:
     inp = d / "input"
     if not inp.exists():
         inp.write_text(request(f"/{year}/day/{day}/input"))
+    if log["started"] is None:
+        # Live runs time from unlock; practice runs time from when the puzzle and
+        # input are both on disk (so queueing behind other runs doesn't count).
+        log["started"] = iso(max(now(), unlock_time(year, day)))
+        log["mode"] = "live" if now() - unlock_time(year, day) < timedelta(hours=1) else "practice"
+        save_log(year, day, log)
 
     if not quiet:
         print(f"Wrote {d.relative_to(REPO)}/puzzle.md, input, {len(p.pre_blocks)} example block(s)")

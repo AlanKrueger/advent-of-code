@@ -1,0 +1,9 @@
+# adventofcode.com/2024/leaderboard/self, snapshot 2026-11-25T23:54:16+00:00
+# Times are from puzzle unlock (midnight US Eastern), before any Claude runs.
+
+      --------Part 1---------   --------Part 2---------
+Day       Time    Rank  Score       Time    Rank  Score
+  4       >24h   81767      0       >24h   74276      0
+  3       >24h  117155      0       >24h  105605      0
+  2   20:10:37  110042      0       >24h   89753      0
+  1       >24h  150869      0       >24h  140986      0

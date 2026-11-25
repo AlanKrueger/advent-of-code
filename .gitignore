@@ -1,2 +1,9 @@
 __pycache__/
 .idea/
+
+# Puzzle inputs and cached puzzle text: don't redistribute AoC data.
+# (Older tracked inputs in 2023/ and 2024/ are left as-is.)
+input
+input.txt
+puzzle.md
+.aoc-cache/

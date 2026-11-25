@@ -17,6 +17,7 @@ Session cookie: ~/.config/aoc/session (or $AOC_SESSION_FILE), contents only.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import html
 import json
 import re
@@ -38,6 +39,8 @@ USER_AGENT = (
 )
 SESSION_FILE = Path(os.environ.get("AOC_SESSION_FILE", Path.home() / ".config/aoc/session"))
 THROTTLE_FILE = Path.home() / ".cache/aoc/last-request"
+SUBMIT_LOCK = Path.home() / ".cache/aoc/submit.lock"
+MAX_COOLDOWN_WAIT = 300  # seconds to keep retrying "answered too recently"
 MIN_INTERVAL = 3.0  # seconds between any two requests to the site
 MAX_WRONG = 3  # wrong answers allowed per part before we stop
 EST = timezone(timedelta(hours=-5))  # AoC unlocks at midnight UTC-5
@@ -200,7 +203,9 @@ def parse_puzzle(page: str) -> ArticleParser:
 
 def main_text(page: str) -> str:
     m = re.search(r"<main>(.*?)</main>", page, re.S)
-    text = re.sub(r"<[^>]+>", "", m.group(1) if m else page)
+    text = m.group(1) if m else page
+    text = re.sub(r"<(style|script)\b.*?</\1>", " ", text, flags=re.S)
+    text = re.sub(r"<[^>]+>", " ", text)
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
 
 
@@ -250,6 +255,30 @@ def cmd_wait(year: int, day: int) -> None:
     sys.exit("Puzzle still not available after retries.")
 
 
+def post_answer(year: int, day: int, part: int, answer: str) -> tuple[str, float]:
+    """POST an answer, holding a cross-process lock so parallel runs on one account
+    queue instead of tripping the site's per-account cooldown. Waits out
+    "answered too recently" responses. Returns (message text, seconds spent waiting)."""
+    SUBMIT_LOCK.parent.mkdir(parents=True, exist_ok=True)
+    waited = 0.0
+    with open(SUBMIT_LOCK, "w") as lock:
+        t0 = time.time()
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        waited += time.time() - t0
+        while True:
+            msg = main_text(request(f"/{year}/day/{day}/answer",
+                                    {"level": str(part), "answer": answer}))
+            if "too recently" not in msg:
+                return msg, waited
+            m = re.search(r"(?:(\d+)m\s*)?(\d+)s left", msg)
+            pause = (int(m.group(1) or 0) * 60 + int(m.group(2)) + 1) if m else 10
+            if waited + pause > MAX_COOLDOWN_WAIT:
+                return msg, waited
+            print(f"Cooldown: waiting {pause}s", flush=True)
+            time.sleep(pause)
+            waited += pause
+
+
 def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
     log = load_log(year, day)
     plog = log["parts"][str(part)]
@@ -274,14 +303,14 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
         result = "correct" if known[part - 1] == answer else "wrong"
         note = "checked against answer already on site"
     else:
-        resp = request(f"/{year}/day/{day}/answer", {"level": str(part), "answer": answer})
-        msg = main_text(resp)
+        msg, waited = post_answer(year, day, part, answer)
+        t = now()
         note = msg[:300]
-        if "That's the right answer" in msg:
+        if "That's the right answer" in msg or "finished every puzzle" in msg:
             result = "correct"
         elif "too recently" in msg:
             print(msg)
-            return 2  # rate limited; not counted as an attempt
+            return 2  # still rate limited after MAX_COOLDOWN_WAIT; not counted
         elif "not the right answer" in msg:
             result = "too high" if "too high" in msg else "too low" if "too low" in msg else "wrong"
         elif "right level" in msg:
@@ -291,7 +320,10 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
             print("Unrecognized response:", msg)
             return 2
 
-    plog["attempts"].append({"time": iso(t), "answer": answer, "result": result, "note": note})
+    attempt = {"time": iso(t), "answer": answer, "result": result, "note": note}
+    if len(known) < part and waited:
+        attempt["cooldown_wait_s"] = round(waited, 1)
+    plog["attempts"].append(attempt)
     if result == "correct":
         plog["solved"] = iso(t)
         plog["answer"] = answer
@@ -299,7 +331,9 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
     print(f"Part {part}: {answer} -> {result}")
     if result == "correct" and part == 1:
         cmd_fetch(year, day, quiet=True)  # pull part 2 text
-        print("Part 2 text is now in puzzle.md")
+        text = (day_dir(year, day) / "puzzle.md").read_text()
+        i = text.find("## --- Part Two ---")
+        print("\n" + (text[i:] if i >= 0 else "(Part Two section not found in puzzle.md)"))
     return 0 if result == "correct" else 1
 
 
@@ -312,15 +346,17 @@ def cmd_report(year: int, day: int) -> None:
     log = load_log(year, day)
     start = parse_iso(log["started"])
     print(f"Mode: {log.get('mode', '?')} · clock started {log['started']}\n")
-    print("| Part | Answer | Time from start | Wrong attempts |")
-    print("|------|--------|-----------------|----------------|")
+    print("| Part | Answer | Time from start | Cooldown waits | Wrong attempts |")
+    print("|------|--------|-----------------|----------------|----------------|")
     for part in ("1", "2"):
         pl = log["parts"][part]
         wrong = sum(1 for a in pl["attempts"] if a["result"] != "correct")
+        cool = sum(a.get("cooldown_wait_s", 0) for a in pl["attempts"])
+        cool_s = f"{cool:.0f}s" if cool else "—"
         if pl.get("solved"):
-            print(f"| {part} | `{pl['answer']}` | {fmt(parse_iso(pl['solved']) - start)} | {wrong} |")
+            print(f"| {part} | `{pl['answer']}` | {fmt(parse_iso(pl['solved']) - start)} | {cool_s} | {wrong} |")
         else:
-            print(f"| {part} | — | unsolved | {wrong} |")
+            print(f"| {part} | — | unsolved | {cool_s} | {wrong} |")
 
 
 def cmd_status(year: int, day: int) -> None:

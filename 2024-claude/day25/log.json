@@ -1,0 +1,38 @@
+{
+  "year": 2024,
+  "day": 25,
+  "unlock": "2024-12-25T05:00:00+00:00",
+  "started": "2026-11-26T00:09:20+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:11:33+00:00",
+          "answer": "3451",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to finding the Chief Historian. [Continue to Part Two]",
+          "cooldown_wait_s": 111.8
+        }
+      ],
+      "solved": "2026-11-26T00:11:33+00:00",
+      "answer": "3451"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:12:46+00:00",
+          "answer": "0",
+          "result": "correct",
+          "note": "Using the notes from the places marked by all fifty stars , The Historians finish the chronicle, wrap it, and give it to you so you can bring it to Santa before the big sleigh launch. Santa is already in the sleigh making the final launch preparations when you arrive. You try to hand him the chronic",
+          "cooldown_wait_s": 0.0
+        }
+      ],
+      "solved": "2026-11-26T00:12:46+00:00",
+      "answer": "0"
+    }
+  },
+  "mode": "practice",
+  "site_answers": [
+    "3451"
+  ]
+}

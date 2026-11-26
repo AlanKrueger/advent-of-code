@@ -1,0 +1,7 @@
+[Unit]
+Description=Advent of Code: pre-flight check before unlock
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/alan/Projects/Personal/advent-of-code/tools/scheduled_run.sh precheck
+TimeoutStartSec=10min

@@ -1,0 +1,9 @@
+[Unit]
+Description=Advent of Code: pre-flight check at 23:00 US Eastern in Nov/Dec
+
+[Timer]
+OnCalendar=*-11,12-* 23:00:00 America/New_York
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

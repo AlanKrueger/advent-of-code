@@ -1,0 +1,9 @@
+[Unit]
+Description=Advent of Code: start the run at 23:55 US Eastern in Nov/Dec
+
+[Timer]
+OnCalendar=*-11,12-* 23:55:00 America/New_York
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

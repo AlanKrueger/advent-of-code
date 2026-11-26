@@ -61,6 +61,9 @@ def parse_iso(s: str) -> datetime:
 
 
 def unlock_time(year: int, day: int) -> datetime:
+    # Rehearsals pretend an already-solved day unlocks at AOC_UNLOCK (ISO time).
+    if os.environ.get("AOC_UNLOCK"):
+        return datetime.fromisoformat(os.environ["AOC_UNLOCK"])
     return datetime(year, 12, day, 0, 0, 0, tzinfo=EST)
 
 
@@ -237,7 +240,10 @@ def cmd_fetch(year: int, day: int, quiet: bool = False) -> ArticleParser:
         # Live runs time from unlock; practice runs time from when the puzzle and
         # input are both on disk (so queueing behind other runs doesn't count).
         log["started"] = iso(max(now(), unlock_time(year, day)))
-        log["mode"] = "live" if now() - unlock_time(year, day) < timedelta(hours=1) else "practice"
+        if os.environ.get("AOC_UNLOCK"):
+            log["mode"] = "rehearsal"
+        else:
+            log["mode"] = "live" if now() - unlock_time(year, day) < timedelta(hours=1) else "practice"
         save_log(year, day, log)
 
     if not quiet:
@@ -381,13 +387,21 @@ def cmd_report(year: int, day: int) -> None:
         print(f"| {part} | {ans} | {took} | {sec(queue)} | {sec(cool)} | {wrong} |")
 
 
+def cmd_check(year: int, day: int) -> None:
+    """Pre-flight: the session cookie works and the site is reachable."""
+    page = request(f"/{year}")
+    if "[Log Out]" not in page:
+        sys.exit("FAIL: not logged in. The session cookie is missing, expired or wrong.")
+    print(f"OK: logged in; unlock for {year} day {day} is {iso(unlock_time(year, day))}")
+
+
 def cmd_status(year: int, day: int) -> None:
     print(json.dumps(load_log(year, day), indent=2))
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["wait", "fetch", "submit", "status", "report"])
+    ap.add_argument("command", choices=["wait", "fetch", "submit", "status", "report", "check"])
     ap.add_argument("year", type=int)
     ap.add_argument("day", type=int)
     ap.add_argument("part", type=int, nargs="?")
@@ -397,7 +411,8 @@ def main() -> None:
         if a.part not in (1, 2) or a.answer is None:
             ap.error("submit needs PART (1 or 2) and ANSWER")
         sys.exit(cmd_submit(a.year, a.day, a.part, a.answer.strip()))
-    {"wait": cmd_wait, "fetch": cmd_fetch, "status": cmd_status, "report": cmd_report}[a.command](a.year, a.day)
+    {"wait": cmd_wait, "fetch": cmd_fetch, "status": cmd_status, "report": cmd_report,
+     "check": cmd_check}[a.command](a.year, a.day)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,7 @@
+[Unit]
+Description=Advent of Code: unattended solve run
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/alan/Projects/Personal/advent-of-code/tools/scheduled_run.sh run
+TimeoutStartSec=6h

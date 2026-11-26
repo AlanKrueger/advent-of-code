@@ -25,6 +25,9 @@ skip step 8, and write only inside your own day folder.
    - Expected answers are usually bold numbers, shown as `` `**N**` `` in `puzzle.md`.
    - Note any parameter that differs between example and real input (e.g. "after 10
      steps" in the example vs 1000 for the real input).
+   - If no code block is usable as input (e.g. it's a step-by-step trace, or part 2
+     uses a different sample stated in prose), write the sample input yourself into
+     `example-input` in the day folder.
 3. **Write `solve.py`** in the day folder. Convention:
    `python3 solve.py [FILE] [PARAMS...]` (default `input`) prints part 1, and part 2
    once written, one per line as `part1: X` / `part2: Y`. Use the optional extra
@@ -39,11 +42,17 @@ skip step 8, and write only inside your own day folder.
    - You may draft part 2 from a guess before it unlocks, but only submit it after
      reading the real part 2 text and matching its example. If you recognise the
      puzzle from training data, say so in the README log (it affects the benchmark).
-4. **Check the example** before every submission. If the example answer doesn't
-   match, fix the code; never submit an answer the example contradicts.
+4. **Check the example** before every submission, in its own foreground command, and
+   read the result before you start the submit. If the example answer doesn't match,
+   fix the code; never submit an answer the example contradicts.
+   - If a part has no usable example (it only gives a toy case your method can't run
+     on, or no expected answer), build an independent check instead, e.g. brute force
+     on a small case or verifying a property of the answer, and note it in the README.
 5. **Submit**: `python3 tools/aoc.py submit YEAR DAY 1 ANSWER`. Run each submit as its
-   own command with a long Bash timeout (e.g. 600000 ms): it may wait in a shared
-   queue or the site's cooldown, printing "(waiting …)" lines while it does.
+   own Bash command with `run_in_background: true` and wait for it to finish: it may
+   wait minutes in a shared queue or the site's cooldown, printing "(waiting …)"
+   lines, and foreground commands are cut off after ~2–3 minutes whatever timeout
+   you set. Don't pipe its output through `tail`/`head`; the result line can be lost.
    - Exit 0: correct. The tool prints the part 2 text (also now in `puzzle.md`).
    - Exit 1: wrong (log notes too high/too low). Re-read the puzzle for a missed
      rule, check edge cases, then try again. The tool refuses repeated answers.

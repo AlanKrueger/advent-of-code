@@ -263,12 +263,13 @@ def cmd_wait(year: int, day: int) -> None:
     sys.exit("Puzzle still not available after retries.")
 
 
-def post_answer(year: int, day: int, part: int, answer: str) -> tuple[str, float]:
+def post_answer(year: int, day: int, part: int, answer: str) -> tuple[str, float, float]:
     """POST an answer, holding a cross-process lock so parallel runs on one account
     queue instead of tripping the site's per-account cooldown. Waits out
-    "answered too recently" responses. Returns (message text, seconds spent waiting)."""
+    "answered too recently" responses. Returns (message text, seconds queued behind
+    other local runs, seconds spent in the site's cooldown)."""
     SUBMIT_LOCK.parent.mkdir(parents=True, exist_ok=True)
-    waited = 0.0
+    queued = waited = 0.0
     with open(SUBMIT_LOCK, "w") as lock:
         t0 = time.time()
         try:
@@ -276,16 +277,16 @@ def post_answer(year: int, day: int, part: int, answer: str) -> tuple[str, float
         except BlockingIOError:
             print("(waiting for other runs' submits to finish)", file=sys.stderr, flush=True)
             fcntl.flock(lock, fcntl.LOCK_EX)
-        waited += time.time() - t0
+        queued = time.time() - t0
         while True:
             msg = main_text(request(f"/{year}/day/{day}/answer",
                                     {"level": str(part), "answer": answer}))
             if "too recently" not in msg:
-                return msg, waited
+                return msg, queued, waited
             m = re.search(r"(?:(\d+)m\s*)?(\d+)s left", msg)
             pause = (int(m.group(1) or 0) * 60 + int(m.group(2)) + 1) if m else 10
             if waited + pause > MAX_COOLDOWN_WAIT:
-                return msg, waited
+                return msg, queued, waited
             print(f"Cooldown: waiting {pause}s", flush=True)
             time.sleep(pause)
             waited += pause
@@ -316,7 +317,7 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
         result = "correct" if known[part - 1] == answer else "wrong"
         note = "checked against answer already on site"
     else:
-        msg, waited = post_answer(year, day, part, answer)
+        msg, queued, waited = post_answer(year, day, part, answer)
         t = now()
         note = msg[:300]
         if "That's the right answer" in msg or "finished every puzzle" in msg:
@@ -334,8 +335,11 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
             return 2
 
     attempt = {"time": iso(t), "answer": answer, "result": result, "note": note}
-    if len(known) < part and waited:
-        attempt["cooldown_wait_s"] = round(waited, 1)
+    if len(known) < part:
+        if queued >= 1:
+            attempt["queue_wait_s"] = round(queued, 1)
+        if waited:
+            attempt["cooldown_wait_s"] = round(waited, 1)
     plog["attempts"].append(attempt)
     if result == "correct":
         plog["solved"] = iso(t)
@@ -361,17 +365,20 @@ def cmd_report(year: int, day: int) -> None:
     log = load_log(year, day)
     start = parse_iso(log["started"])
     print(f"Mode: {log.get('mode', '?')} · clock started {log['started']}\n")
-    print("| Part | Answer | Time from start | Cooldown waits | Wrong attempts |")
-    print("|------|--------|-----------------|----------------|----------------|")
+    # "Local queue" is time spent behind other runs on this machine (parallel
+    # practice only); "Site cooldown" is the site's wait between answers.
+    # Logs from before this split only have cooldown_wait_s, which then covers both.
+    print("| Part | Answer | Time from start | Local queue | Site cooldown | Wrong attempts |")
+    print("|------|--------|-----------------|-------------|---------------|----------------|")
+    sec = lambda v: f"{v:.0f}s" if v else "—"
     for part in ("1", "2"):
         pl = log["parts"][part]
         wrong = sum(1 for a in pl["attempts"] if a["result"] != "correct")
+        queue = sum(a.get("queue_wait_s", 0) for a in pl["attempts"])
         cool = sum(a.get("cooldown_wait_s", 0) for a in pl["attempts"])
-        cool_s = f"{cool:.0f}s" if cool else "—"
-        if pl.get("solved"):
-            print(f"| {part} | `{pl['answer']}` | {fmt(parse_iso(pl['solved']) - start)} | {cool_s} | {wrong} |")
-        else:
-            print(f"| {part} | — | unsolved | {cool_s} | {wrong} |")
+        took = fmt(parse_iso(pl["solved"]) - start) if pl.get("solved") else "unsolved"
+        ans = f"`{pl['answer']}`" if pl.get("solved") else "—"
+        print(f"| {part} | {ans} | {took} | {sec(queue)} | {sec(cool)} | {wrong} |")
 
 
 def cmd_status(year: int, day: int) -> None:

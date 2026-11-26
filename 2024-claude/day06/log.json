@@ -1,0 +1,38 @@
+{
+  "year": 2024,
+  "day": 6,
+  "unlock": "2024-12-06T05:00:00+00:00",
+  "started": "2026-11-26T00:04:23+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:06:32+00:00",
+          "answer": "4433",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to finding the Chief Historian. [Continue to Part Two]",
+          "cooldown_wait_s": 51.1
+        }
+      ],
+      "solved": "2026-11-26T00:06:32+00:00",
+      "answer": "4433"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:09:41+00:00",
+          "answer": "1516",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to finding the Chief Historian. You have completed Day 6! You can [Share on Bluesky Twitter Mastodon ] this victory or [Return to Your Advent Calendar] .",
+          "cooldown_wait_s": 120.0
+        }
+      ],
+      "solved": "2026-11-26T00:09:41+00:00",
+      "answer": "1516"
+    }
+  },
+  "mode": "practice",
+  "site_answers": [
+    "4433"
+  ]
+}

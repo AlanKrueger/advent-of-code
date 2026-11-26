@@ -41,7 +41,9 @@ skip step 8, and write only inside your own day folder.
      puzzle from training data, say so in the README log (it affects the benchmark).
 4. **Check the example** before every submission. If the example answer doesn't
    match, fix the code; never submit an answer the example contradicts.
-5. **Submit**: `python3 tools/aoc.py submit YEAR DAY 1 ANSWER`.
+5. **Submit**: `python3 tools/aoc.py submit YEAR DAY 1 ANSWER`. Run each submit as its
+   own command with a long Bash timeout (e.g. 600000 ms): it may wait in a shared
+   queue or the site's cooldown, printing "(waiting …)" lines while it does.
    - Exit 0: correct. The tool prints the part 2 text (also now in `puzzle.md`).
    - Exit 1: wrong (log notes too high/too low). Re-read the puzzle for a missed
      rule, check edge cases, then try again. The tool refuses repeated answers.

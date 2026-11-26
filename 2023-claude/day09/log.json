@@ -1,0 +1,33 @@
+{
+  "year": 2023,
+  "day": 9,
+  "unlock": "2023-12-09T05:00:00+00:00",
+  "started": "2026-11-25T23:57:37+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-25T23:58:34+00:00",
+          "answer": "1861775706",
+          "result": "correct",
+          "note": "checked against answer already on site"
+        }
+      ],
+      "solved": "2026-11-25T23:58:34+00:00",
+      "answer": "1861775706"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:00:31+00:00",
+          "answer": "1082",
+          "result": "correct",
+          "note": "checked against answer already on site"
+        }
+      ],
+      "solved": "2026-11-26T00:00:31+00:00",
+      "answer": "1082"
+    }
+  },
+  "mode": "practice"
+}

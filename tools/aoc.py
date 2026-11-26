@@ -107,6 +107,8 @@ def throttle() -> None:
             last = 0.0
         wait = MIN_INTERVAL - (time.time() - last)
         if wait > 0:
+            if wait > 1:
+                print(f"(request queue: waiting {wait:.0f}s)", file=sys.stderr, flush=True)
             time.sleep(wait)
         THROTTLE_FILE.write_text(str(time.time()))
 
@@ -221,6 +223,9 @@ def cmd_fetch(year: int, day: int, quiet: bool = False) -> ArticleParser:
     page = request(f"/{year}/day/{day}")
     p = parse_puzzle(page)
     (d / "puzzle.md").write_text(p.markdown())
+    if p.answers != log.get("site_answers", []):
+        log["site_answers"] = p.answers
+        save_log(year, day, log)
     for i, block in enumerate(p.pre_blocks, 1):
         f = d / f"example-{i}"
         if not f.exists():
@@ -266,7 +271,11 @@ def post_answer(year: int, day: int, part: int, answer: str) -> tuple[str, float
     waited = 0.0
     with open(SUBMIT_LOCK, "w") as lock:
         t0 = time.time()
-        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("(waiting for other runs' submits to finish)", file=sys.stderr, flush=True)
+            fcntl.flock(lock, fcntl.LOCK_EX)
         waited += time.time() - t0
         while True:
             msg = main_text(request(f"/{year}/day/{day}/answer",
@@ -299,8 +308,9 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
 
     # If the site already shows an answer for this part (e.g. the user solved it
     # by hand in a past year), check locally instead of submitting.
-    page = request(f"/{year}/day/{day}")
-    known = parse_puzzle(page).answers
+    known = log.get("site_answers", [])
+    if len(known) < part:
+        known = parse_puzzle(request(f"/{year}/day/{day}")).answers
     t = now()
     if len(known) >= part:
         result = "correct" if known[part - 1] == answer else "wrong"
@@ -333,8 +343,10 @@ def cmd_submit(year: int, day: int, part: int, answer: str) -> int:
     save_log(year, day, log)
     print(f"Part {part}: {answer} -> {result}")
     if result == "correct" and part == 1:
-        cmd_fetch(year, day, quiet=True)  # pull part 2 text
         text = (day_dir(year, day) / "puzzle.md").read_text()
+        if "## --- Part Two ---" not in text:
+            cmd_fetch(year, day, quiet=True)  # pull part 2 text
+            text = (day_dir(year, day) / "puzzle.md").read_text()
         i = text.find("## --- Part Two ---")
         print("\n" + (text[i:] if i >= 0 else "(Part Two section not found in puzzle.md)"))
     return 0 if result == "correct" else 1

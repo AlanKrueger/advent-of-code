@@ -1,0 +1,34 @@
+{
+  "year": 2023,
+  "day": 19,
+  "unlock": "2023-12-19T05:00:00+00:00",
+  "started": "2026-11-25T23:57:55+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-25T23:59:07+00:00",
+          "answer": "472630",
+          "result": "correct",
+          "note": "checked against answer already on site"
+        }
+      ],
+      "solved": "2026-11-25T23:59:07+00:00",
+      "answer": "472630"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:01:49+00:00",
+          "answer": "116738260946855",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to restoring snow operations. You have completed Day 19! You can [Share on Bluesky Twitter Mastodon ] this victory or [Return to Your Advent Calendar] .",
+          "cooldown_wait_s": 45.1
+        }
+      ],
+      "solved": "2026-11-26T00:01:49+00:00",
+      "answer": "116738260946855"
+    }
+  },
+  "mode": "practice"
+}

@@ -1,0 +1,38 @@
+{
+  "year": 2023,
+  "day": 24,
+  "unlock": "2023-12-24T05:00:00+00:00",
+  "started": "2026-11-26T00:01:28+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:02:19+00:00",
+          "answer": "15318",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to restoring snow operations. [Continue to Part Two]",
+          "cooldown_wait_s": 18.1
+        }
+      ],
+      "solved": "2026-11-26T00:02:19+00:00",
+      "answer": "15318"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:02:49+00:00",
+          "answer": "870379016024859",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to restoring snow operations. You have completed Day 24! You can [Share on Bluesky Twitter Mastodon ] this victory or [Return to Your Advent Calendar] .",
+          "cooldown_wait_s": 12.0
+        }
+      ],
+      "solved": "2026-11-26T00:02:49+00:00",
+      "answer": "870379016024859"
+    }
+  },
+  "mode": "practice",
+  "site_answers": [
+    "15318"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "year": 2023,
+  "day": 25,
+  "unlock": "2023-12-25T05:00:00+00:00",
+  "started": "2026-11-26T00:01:34+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:02:31+00:00",
+          "answer": "548960",
+          "result": "correct",
+          "note": "That's the right answer! You are one gold star closer to restoring snow operations. [Continue to Part Two]",
+          "cooldown_wait_s": 21.0
+        }
+      ],
+      "solved": "2026-11-26T00:02:31+00:00",
+      "answer": "548960"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:05:38+00:00",
+          "answer": "0",
+          "result": "correct",
+          "note": "You supply all fifty stars and restart global snow production! As you reach the edge of Snow Island, you can already tell from way up here that everyone will have a white Christmas this year after all. Congratulations! You've finished every puzzle in Advent of Code 2023! I hope you had as much fun s",
+          "cooldown_wait_s": 36.1
+        }
+      ],
+      "solved": "2026-11-26T00:05:38+00:00",
+      "answer": "0"
+    }
+  },
+  "mode": "practice",
+  "site_answers": [
+    "548960"
+  ]
+}

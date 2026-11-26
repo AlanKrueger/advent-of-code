@@ -1,0 +1,37 @@
+{
+  "year": 2024,
+  "day": 3,
+  "unlock": "2024-12-03T05:00:00+00:00",
+  "started": "2026-11-26T00:04:53+00:00",
+  "parts": {
+    "1": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:05:04+00:00",
+          "answer": "171183089",
+          "result": "correct",
+          "note": "checked against answer already on site"
+        }
+      ],
+      "solved": "2026-11-26T00:05:04+00:00",
+      "answer": "171183089"
+    },
+    "2": {
+      "attempts": [
+        {
+          "time": "2026-11-26T00:05:10+00:00",
+          "answer": "63866497",
+          "result": "correct",
+          "note": "checked against answer already on site"
+        }
+      ],
+      "solved": "2026-11-26T00:05:10+00:00",
+      "answer": "63866497"
+    }
+  },
+  "site_answers": [
+    "171183089",
+    "63866497"
+  ],
+  "mode": "practice"
+}

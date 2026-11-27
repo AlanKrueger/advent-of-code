@@ -38,12 +38,14 @@ alert() {
     notify-send -u critical "Advent of Code run" "$*" 2>/dev/null || true
 }
 
-# Decide tonight's target from the ET date 15 minutes from now.
-target_md=$(TZ=America/New_York date -d '+15 min' +%m-%d)
+# Decide tonight's target from the ET date just after the coming midnight. The
+# precheck runs at 23:00 ET and the run at 23:55 ET, so look 75 minutes ahead.
+ahead='+75 min'
+target_md=$(TZ=America/New_York date -d "$ahead" +%m-%d)
 target_month=${target_md%-*}; target_day=$((10#${target_md#*-}))
 kind=${AOC_TARGET:-}
 if [[ -z $kind ]]; then
-    if [[ $target_month == 12 && $target_day -le $LIVE_LAST_DAY && $(TZ=America/New_York date -d '+15 min' +%Y) == "$LIVE_YEAR" ]]; then
+    if [[ $target_month == 12 && $target_day -le $LIVE_LAST_DAY && $(TZ=America/New_York date -d "$ahead" +%Y) == "$LIVE_YEAR" ]]; then
         kind=live
     elif [[ " $REHEARSAL_DATES " == *" $target_md "* ]]; then
         kind=rehearsal
@@ -59,7 +61,7 @@ else
     # Rehearse a different solved day each night: Nov 26 -> day 1, Nov 27 -> day 2, ...
     year=${AOC_YEAR:-$REHEARSAL_YEAR}
     day=${AOC_DAY:-$(( (target_day - 26) % 12 + 1 ))}
-    export AOC_UNLOCK=${AOC_UNLOCK:-$(TZ=America/New_York date -d "$(TZ=America/New_York date -d '+15 min' +%F) 00:00" --iso-8601=seconds)}
+    export AOC_UNLOCK=${AOC_UNLOCK:-$(TZ=America/New_York date -d "$(TZ=America/New_York date -d "$ahead" +%F) 00:00" --iso-8601=seconds)}
     workdir=$REHEARSAL_WT
 fi
 say "mode=$mode kind=$kind year=$year day=$day unlock=${AOC_UNLOCK:-real} workdir=$workdir"
